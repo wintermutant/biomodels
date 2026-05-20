@@ -19,11 +19,17 @@ Create a `.env` file in your project root (or export to your shell):
 BIOMODELS_DB_CONNECTION=postgresql+psycopg2://user:password@localhost:5432/yourdb
 ```
 
+
 Install:
 
 ```bash
 uv pip install -e .
 ```
+
+## Tests
+
+For the Pytest suite to work, you must have a .env.test in the root directory. This should point to a *test database*, so it does not update the real database.
+As of right now, this .env.test only needs *BIOMODELS_DB_CONNECTION*.
 
 ---
 

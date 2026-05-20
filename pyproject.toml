@@ -29,3 +29,7 @@ Repository = "https://github.com/wintermutant/biomodels"
 [tool.setuptools.dynamic]
 readme = {file = ["README.md"]}
 version = {attr = "biomodels.__version__"}
+
+[tool.pytest.ini_options]                                                                                                               
+log_cli = true                                                                                                                          
+log_cli_level = "DEBUG"
