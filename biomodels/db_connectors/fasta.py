@@ -10,6 +10,19 @@ from biomodels.schemas import FastaRecordProtocol
 LOGGER = logging.getLogger(__name__)
 
 
+def _get_or_create_sequence(session: Session, sequence: str) -> tuple[Sequence, bool]:
+    seq_hash = compute_sequence_hash(sequence)
+    existing = session.exec(
+        select(Sequence).where(Sequence.sequence_hash == seq_hash)
+    ).first()
+    if existing:
+        return existing, False
+    seq = Sequence(sequence=sequence)
+    session.add(seq)
+    session.flush()
+    return seq, True
+
+
 def ingest_fasta_records(
     filename: str,
     data_key: dict[int, FastaRecordProtocol],
@@ -24,6 +37,7 @@ def ingest_fasta_records(
     eng = engine or get_engine()
     created_sequences = 0
     reused_sequences = 0
+
     with Session(eng) as session:
         fasta_file = FastaFile(filename=filename, file_metadata=file_metadata)
         session.add(fasta_file)
@@ -31,20 +45,11 @@ def ingest_fasta_records(
         fasta_file_id = fasta_file.id
 
         for index, record in data_key.items():
-            seq_hash = compute_sequence_hash(record.sequence)
-
-            seq = session.exec(
-                select(Sequence).where(Sequence.sequence_hash == seq_hash)
-            ).first()
-
-            if seq:
-                reused_sequences += 1
-            else:
-                seq = Sequence(sequence=record.sequence)
-                session.add(seq)
-                session.flush()
+            seq, created = _get_or_create_sequence(session, record.sequence)
+            if created:
                 created_sequences += 1
-
+            else:
+                reused_sequences += 1
             session.add(FastaEntry(
                 file_id=fasta_file_id,
                 sequence_id=seq.id,
