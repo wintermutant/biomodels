@@ -19,6 +19,8 @@ Create a `.env` file in your project root (or export to your shell):
 BIOMODELS_DB_CONNECTION=postgresql+psycopg2://user:password@localhost:5432/yourdb
 ```
 
+This is required to connect to yor Postgres db and the Pytest suit to pass.
+
 Install:
 
 ```bash
