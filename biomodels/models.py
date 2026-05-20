@@ -2,7 +2,7 @@ import hashlib
 from datetime import datetime
 from typing import Any
 
-from sqlalchemy import Column, func
+from sqlalchemy import Column, DateTime, func
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import validates
 from sqlmodel import Field, SQLModel
@@ -39,7 +39,7 @@ class FastaFile(SQLModel, table=True):
         default=None, sa_column=Column("metadata", JSONB)
     )
     created_at: datetime | None = Field(
-        default=None, sa_column=Column("created_at", server_default=func.now(), nullable=False)
+        default=None, sa_column=Column("created_at", DateTime(timezone=True), server_default=func.now(), nullable=False)
     )
 
 
@@ -51,3 +51,13 @@ class FastaEntry(SQLModel, table=True):
     sequence_id: int = Field(foreign_key="sequence.id")
     header: str
     entry_index: int
+
+
+class DBTestRun(SQLModel, table=True):
+    __tablename__ = "test_run"
+
+    id: int | None = Field(default=None, primary_key=True)
+    test_time: datetime | None = Field(
+        default=None, sa_column=Column("test_time", DateTime(timezone=True), server_default=func.now(), nullable=False)
+    )
+    test_content: str
