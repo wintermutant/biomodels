@@ -13,7 +13,6 @@ _engine = None
 
 def _get_connection_string() -> str:
     conn = os.getenv("BIOMODELS_DB_CONNECTION")
-    print(f'Connection: {conn}')
     if not conn:
         raise RuntimeError(
             "BIOMODELS_DB_CONNECTION is not set. "
@@ -40,8 +39,8 @@ def get_engine():
     global _engine
     if _engine is None:
         _engine = initialize()
-        print('Engine initialized!')
-    print('Returning engine')
+        LOGGER.debug('Engine initialized!')
+    LOGGER.debug('Returning engine')
     return _engine
 
 
